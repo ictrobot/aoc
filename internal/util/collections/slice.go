@@ -21,11 +21,11 @@ func Fill[S ~[]E, E any](s S, value E) {
 		s[i] = value
 	}
 
-	if len(s) <= 2 {
+	if len(s) <= 32 {
 		return
 	}
 
-	for j := 2; j < len(s); j *= 2 {
+	for j := 32; j < len(s); j *= 2 {
 		copy(s[j:], s[:j])
 	}
 }
