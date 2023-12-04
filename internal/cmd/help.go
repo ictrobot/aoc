@@ -119,6 +119,8 @@ func printBuild(w io.Writer) {
 			s += " modified"
 		}
 		s += ") "
+	} else if info.Main.Version != "" && info.Main.Version != "(devel)" {
+		s += "(" + info.Main.Version + ") "
 	}
 
 	s += info.GoVersion + "\n"
