@@ -91,7 +91,7 @@ func (b *Blueprint) maxGeodes(runtime int) int {
 		// calculate the maximum number of geodes if we could build a geode
 		// robot every minute from now - if it is less than or equal to the max
 		// already found, stop
-		if (geodes+(geodes+remaining))*(remaining+1)/2 <= maxFound {
+		if geodes+(remaining*(remaining+1)/2) <= maxFound {
 			return
 		}
 
@@ -135,10 +135,6 @@ func (b *Blueprint) maxGeodes(runtime int) int {
 			}
 
 			search(minute+mins, newRobots, newResources)
-
-			if mins == 1 && robotType == geode {
-				break
-			}
 		}
 	}
 
