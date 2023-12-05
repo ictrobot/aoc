@@ -4,8 +4,6 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/ictrobot/aoc/internal/util/parse"
-	"github.com/samber/lo"
-	"github.com/samber/lo/parallel"
 	"math"
 	"strings"
 )
@@ -15,7 +13,7 @@ var Example string
 
 type Day05 struct {
 	seeds []int
-	maps  []rangeMap
+	maps  map[string]rangeMap
 }
 
 type rangeMap struct {
@@ -24,9 +22,9 @@ type rangeMap struct {
 }
 
 type mapping struct {
-	destStart   int
-	sourceStart int
-	length      int
+	dstStart int
+	srcStart int
+	srcEnd   int
 }
 
 func (d *Day05) Parse(input string) {
@@ -34,17 +32,21 @@ func (d *Day05) Parse(input string) {
 
 	d.seeds = parse.ExtractInts(chunks[0])
 
-	d.maps = nil
+	d.maps = make(map[string]rangeMap)
 	for _, c := range chunks[1:] {
 		s := strings.Split(strings.Split(c, " ")[0], "-to-")
 		r := rangeMap{from: s[0], to: s[1]}
 
 		ints := parse.ExtractInts(c)
 		for i := 0; i < len(ints)-2; i += 3 {
-			r.elements = append(r.elements, mapping{ints[i+0], ints[i+1], ints[i+2]})
+			r.elements = append(r.elements, mapping{
+				dstStart: ints[i],
+				srcStart: ints[i+1],
+				srcEnd:   ints[i+1] + ints[i+2] - 1,
+			})
 		}
 
-		d.maps = append(d.maps, r)
+		d.maps[r.from] = r
 	}
 }
 
@@ -55,37 +57,87 @@ func (d *Day05) ParseExample() {
 func (d *Day05) Part1() any {
 	m := math.MaxInt
 	for _, s := range d.seeds {
-		m = min(m, d.MapFrom("seed", "location", s))
+		m = min(m, d.Map("seed", "location", s))
 	}
 	return m
 }
 
 func (d *Day05) Part2() any {
-	return lo.Min(parallel.Map(lo.Chunk(d.seeds, 2), func(r []int, _ int) int {
-		m := math.MaxInt
-		for s := r[0]; s <= r[0]+r[1]; s++ {
-			m = min(m, d.MapFrom("seed", "location", s))
+	m := math.MaxInt
+	for i := 0; i < len(d.seeds)-1; i += 2 {
+		results := d.MapInterval("seed", "location", [2]int{d.seeds[0], d.seeds[0] + d.seeds[1] - 1})
+		for _, r := range results {
+			m = min(m, r[0], r[1])
 		}
-		return m
-	}))
+	}
+	return m
 }
 
-func (d *Day05) MapFrom(from, to string, v int) int {
-	for _, r := range d.maps {
-		if r.from == from {
-			out := v
-			for _, e := range r.elements {
-				if v >= e.sourceStart && v < e.sourceStart+e.length {
-					out = e.destStart + (v - e.sourceStart)
+func (d *Day05) Map(from, to string, v int) int {
+	for {
+		m, mOk := d.maps[from]
+		if !mOk {
+			panic(fmt.Errorf("no map from %s", from))
+		}
+
+		for _, e := range m.elements {
+			if v <= e.srcEnd && e.srcStart <= v {
+				v = v - e.srcStart + e.dstStart
+				break
+			}
+		}
+
+		if m.to == to {
+			return v
+		}
+
+		from = m.to
+	}
+}
+
+func (d *Day05) MapInterval(from, to string, in [2]int) [][2]int {
+	var queue, result [][2]int
+	queue = append(queue, in)
+
+	for {
+		m, mOk := d.maps[from]
+		if !mOk {
+			panic(fmt.Errorf("no map from %s", from))
+		}
+
+	intervals:
+		for len(queue) > 0 {
+			i := queue[0]
+			queue = queue[1:]
+
+			for _, e := range m.elements {
+				if i[0] <= e.srcEnd && e.srcStart <= i[1] {
+					result = append(result, [2]int{
+						max(i[0], e.srcStart) - e.srcStart + e.dstStart,
+						min(i[1], e.srcEnd) - e.srcStart + e.dstStart,
+					})
+
+					if i[0] < e.srcStart {
+						queue = append(queue, [2]int{i[0], e.srcStart - 1})
+					}
+
+					if e.srcEnd < i[1] {
+						queue = append(queue, [2]int{e.srcEnd + 1, i[1]})
+					}
+
+					continue intervals
 				}
 			}
 
-			if r.to == to {
-				return out
-			}
-			return d.MapFrom(r.to, to, out)
+			result = append(result, i)
 		}
-	}
 
-	panic(fmt.Errorf("%v %v %v", from, to, v))
+		if m.to == to {
+			return result
+		}
+
+		from = m.to
+		queue = result
+		result = nil
+	}
 }
