@@ -1,6 +1,9 @@
 package vec
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type Grid[T comparable] struct {
 	init       bool
@@ -143,7 +146,6 @@ func (g *Grid[T]) Counts() map[T]int {
 	counts := make(map[T]int)
 	for x := 0; x < len(g.s); x++ {
 		for y := 0; y < len(g.s[x]); y++ {
-
 			if g.s[x][y] != zero {
 				counts[g.s[x][y]]++
 			}
@@ -152,10 +154,47 @@ func (g *Grid[T]) Counts() map[T]int {
 	return counts
 }
 
-// Bounds returns the grid's xMin, yMin, xMax, yMax, which is likely to
-// be slightly larger than the actual bounds containing non-zero values
-func (g *Grid[T]) Bounds() (int, int, int, int) {
+// Bounds returns the grid's xMin, yMin, xMax, yMax, which is likely to be
+// slightly larger than the actual bounds containing non-zero values.
+//
+// Can be used with NewGrid to make a new grid with the same size as this grid:
+//
+//	vec.NewGrid[T](grid.Bounds())
+func (g *Grid[T]) Bounds() (xMin int, yMin int, xMax int, yMax int) {
 	return g.xMin, g.yMin, g.xMax, g.yMax
+}
+
+// NonZeroBounds returns the min x, min y, max x & max y with non-zero elements.
+// If there are no non-zero elements, zeroes are returned.
+func (g *Grid[T]) NonZeroBounds() (xMin int, yMin int, xMax int, yMax int) {
+	if !g.init {
+		return 0, 0, 0, 0
+	}
+
+	xMin = math.MaxInt
+	yMin = math.MaxInt
+	xMax = math.MinInt
+	yMax = math.MinInt
+
+	var zero T
+	found := false
+	for x := 0; x < len(g.s); x++ {
+		for y := 0; y < len(g.s[x]); y++ {
+			if g.s[x][y] != zero {
+				found = true
+				xMin = min(xMin, x)
+				yMin = min(yMin, y)
+				xMax = max(xMax, x)
+				yMax = max(yMax, y)
+			}
+		}
+	}
+
+	if !found {
+		return 0, 0, 0, 0
+	}
+
+	return xMin + g.xMin, yMin + g.yMin, xMax + g.xMin, yMax + g.yMin
 }
 
 // Resize returns a copy of the Grid resized to the specified size.

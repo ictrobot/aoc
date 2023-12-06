@@ -267,6 +267,30 @@ func TestGrid_Bounds(t *testing.T) {
 	assert.GreaterOrEqual(t, yMax, 50)
 }
 
+func TestGrid_NonZeroBounds(t *testing.T) {
+	g1 := new(Grid[int32])
+	xMin, yMin, xMax, yMax := g1.NonZeroBounds()
+	assert.Zero(t, xMin)
+	assert.Zero(t, yMin)
+	assert.Zero(t, xMax)
+	assert.Zero(t, yMax)
+
+	g1 = NewGrid[int32](100, 200, 110, 210)
+	xMin, yMin, xMax, yMax = g1.NonZeroBounds()
+	assert.Zero(t, xMin)
+	assert.Zero(t, yMin)
+	assert.Zero(t, xMax)
+	assert.Zero(t, yMax)
+
+	g1.SetInts(108, 204, 1)
+	g1.SetInts(102, 205, 2)
+	xMin, yMin, xMax, yMax = g1.NonZeroBounds()
+	assert.Equal(t, 102, xMin)
+	assert.Equal(t, 204, yMin)
+	assert.Equal(t, 108, xMax)
+	assert.Equal(t, 205, yMax)
+}
+
 func TestGrid_Resize(t *testing.T) {
 	g1 := NewGrid[int](-2, -2, 2, 2)
 	for x := 0; x < 5; x++ {
