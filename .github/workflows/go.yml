@@ -1,0 +1,36 @@
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '~1.21.4'
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Build
+        run: go build -v . && file aoc
+
+      - name: Run
+        run: ./aoc -tpe
+
+      - name: Test (32 bit)
+        run: GOARCH=386 go test -v ./...
+
+      - name: Build (32 bit)
+        run: GOARCH=386 go build -v . && file aoc
+
+      - name: Run (32 bit)
+        run: ./aoc -tpe
