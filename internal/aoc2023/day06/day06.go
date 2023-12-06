@@ -3,6 +3,7 @@ package day06
 import (
 	_ "embed"
 	"github.com/ictrobot/aoc/internal/util/parse"
+	"math"
 	"strings"
 )
 
@@ -37,25 +38,37 @@ func (d *Day06) ParseExample() {
 }
 
 func (d *Day06) Part1() any {
-	ans := 1
+	result := 1
 	for _, r := range d.races {
-		wins := 0
-		for h := 1; h < r.time; h++ {
-			if h*(r.time-h) > r.dist {
-				wins++
-			}
-		}
-		ans *= wins
+		result *= r.winningWays()
 	}
-	return ans
+	return result
 }
 
 func (d *Day06) Part2() any {
-	wins := 0
-	for h := 1; h < d.part2.time; h++ {
-		if h*(d.part2.time-h) > d.part2.dist {
-			wins++
-		}
+	return d.part2.winningWays()
+}
+
+func (r race) winningWays() int {
+	i := r.winningInterval()
+	return i[1] - i[0] + 1
+}
+
+func (r race) winningInterval() [2]int {
+	// x(T-x) > D
+	// 0 > x**2 - Tx + D
+	time := float64(r.time)
+	dist := float64(r.dist)
+
+	d := (time * time) - (4.0 * dist)
+	if d <= 0 {
+		panic("can't win")
 	}
-	return wins
+	d = math.Sqrt(d)
+
+	// need the min integer > lower bound and max int < upper bound
+	return [2]int{
+		int(math.Floor((time-d)/2) + 1),
+		int(math.Ceil((time+d)/2) - 1),
+	}
 }
