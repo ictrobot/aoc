@@ -16,20 +16,20 @@ type Day06 struct {
 }
 
 type race struct {
-	time, dist int
+	time, dist int64
 }
 
 func (d *Day06) Parse(input string) {
 	lines := parse.Lines(input)
 
 	d.races = nil
-	times := parse.ExtractInts(lines[0])
-	distances := parse.ExtractInts(lines[1])
+	times := parse.ExtractInt64s(lines[0])
+	distances := parse.ExtractInt64s(lines[1])
 	for i := range times {
 		d.races = append(d.races, race{times[i], distances[i]})
 	}
 
-	p2 := parse.ExtractInts(strings.ReplaceAll(input, " ", ""))
+	p2 := parse.ExtractInt64s(strings.ReplaceAll(input, " ", ""))
 	d.part2 = race{p2[0], p2[1]}
 }
 

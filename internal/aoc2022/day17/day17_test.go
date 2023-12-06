@@ -6,7 +6,7 @@ import (
 )
 
 const Part1 = 3068
-const Part2 = 1514285714288
+const Part2 int64 = 1514285714288
 
 func TestDay17_ParseExample(t *testing.T) {
 	d1 := Day17{}

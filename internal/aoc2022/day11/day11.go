@@ -19,14 +19,14 @@ type Day11 struct {
 
 type monkey struct {
 	_           parse.Placeholder `regex:"^[0-9]+$"` // Monkey _:
-	Items       []int
+	Items       []int64
 	_           parse.Placeholder `match:"old"` // old on LHS
 	Operation   string
-	Operand     *int              // nil for old
+	Operand     *int64            // nil for old
 	_           parse.Placeholder `match:"old" flags:"optional"` // old on RHS
-	Test        int
-	TrueMonkey  int
-	FalseMonkey int
+	Test        int64
+	TrueMonkey  int64
+	FalseMonkey int64
 }
 
 func (d *Day11) Parse(input string) {
@@ -45,16 +45,16 @@ func (d *Day11) Part2() any {
 	return d.monkeyBusiness(10_000, 1)
 }
 
-func (d *Day11) monkeyBusiness(rounds int, divisor int) int {
+func (d *Day11) monkeyBusiness(rounds int64, divisor int64) int64 {
 	monkeys := *deep.Clone(&d.Monkeys)
-	inspected := make([]int, len(monkeys))
+	inspected := make([]int64, len(monkeys))
 
-	mod := 1
+	mod := int64(1)
 	for _, m := range monkeys {
 		mod *= m.Test
 	}
 
-	for round := 0; round < rounds; round++ {
+	for round := int64(0); round < rounds; round++ {
 		for i := range monkeys {
 			items := monkeys[i].Items
 			monkeys[i].Items = nil

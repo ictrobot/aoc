@@ -12,7 +12,7 @@ import (
 var Example string
 
 type Day05 struct {
-	seeds []int
+	seeds []int64
 	maps  map[string]rangeMap
 }
 
@@ -22,22 +22,22 @@ type rangeMap struct {
 }
 
 type mapping struct {
-	dstStart int
-	srcStart int
-	srcEnd   int
+	dstStart int64
+	srcStart int64
+	srcEnd   int64
 }
 
 func (d *Day05) Parse(input string) {
 	chunks := parse.Chunks(input)
 
-	d.seeds = parse.ExtractInts(chunks[0])
+	d.seeds = parse.ExtractInt64s(chunks[0])
 
 	d.maps = make(map[string]rangeMap)
 	for _, c := range chunks[1:] {
 		s := strings.Split(strings.Split(c, " ")[0], "-to-")
 		r := rangeMap{from: s[0], to: s[1]}
 
-		ints := parse.ExtractInts(c)
+		ints := parse.ExtractInt64s(c)
 		for i := 0; i < len(ints)-2; i += 3 {
 			r.elements = append(r.elements, mapping{
 				dstStart: ints[i],
@@ -55,7 +55,7 @@ func (d *Day05) ParseExample() {
 }
 
 func (d *Day05) Part1() any {
-	m := math.MaxInt
+	m := int64(math.MaxInt64)
 	for _, s := range d.seeds {
 		m = min(m, d.Map("seed", "location", s))
 	}
@@ -63,9 +63,9 @@ func (d *Day05) Part1() any {
 }
 
 func (d *Day05) Part2() any {
-	m := math.MaxInt
+	m := int64(math.MaxInt64)
 	for i := 0; i < len(d.seeds)-1; i += 2 {
-		results := d.MapInterval("seed", "location", [2]int{d.seeds[0], d.seeds[0] + d.seeds[1] - 1})
+		results := d.MapInterval("seed", "location", [2]int64{d.seeds[0], d.seeds[0] + d.seeds[1] - 1})
 		for _, r := range results {
 			m = min(m, r[0], r[1])
 		}
@@ -73,7 +73,7 @@ func (d *Day05) Part2() any {
 	return m
 }
 
-func (d *Day05) Map(from, to string, v int) int {
+func (d *Day05) Map(from, to string, v int64) int64 {
 	for {
 		m, mOk := d.maps[from]
 		if !mOk {
@@ -95,8 +95,8 @@ func (d *Day05) Map(from, to string, v int) int {
 	}
 }
 
-func (d *Day05) MapInterval(from, to string, in [2]int) [][2]int {
-	var queue, result [][2]int
+func (d *Day05) MapInterval(from, to string, in [2]int64) [][2]int64 {
+	var queue, result [][2]int64
 	queue = append(queue, in)
 
 	for {
@@ -112,17 +112,17 @@ func (d *Day05) MapInterval(from, to string, in [2]int) [][2]int {
 
 			for _, e := range m.elements {
 				if i[0] <= e.srcEnd && e.srcStart <= i[1] {
-					result = append(result, [2]int{
+					result = append(result, [2]int64{
 						max(i[0], e.srcStart) - e.srcStart + e.dstStart,
 						min(i[1], e.srcEnd) - e.srcStart + e.dstStart,
 					})
 
 					if i[0] < e.srcStart {
-						queue = append(queue, [2]int{i[0], e.srcStart - 1})
+						queue = append(queue, [2]int64{i[0], e.srcStart - 1})
 					}
 
 					if e.srcEnd < i[1] {
-						queue = append(queue, [2]int{e.srcEnd + 1, i[1]})
+						queue = append(queue, [2]int64{e.srcEnd + 1, i[1]})
 					}
 
 					continue intervals
