@@ -39,7 +39,7 @@ func BenchmarkDay20_Part1(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		assert.EqualValues(b, Part2, d.Part1())
+		assert.EqualValues(b, Part1, d.Part1())
 	}
 }
 
