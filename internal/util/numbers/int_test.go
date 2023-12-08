@@ -32,3 +32,29 @@ func TestIntSign(t *testing.T) {
 	assert.Equal(t, -1, IntSign(-1))
 	assert.Equal(t, -1, IntSign(-255))
 }
+
+func TestGCD(t *testing.T) {
+	assert.EqualValues(t, 4, GCD[int](4, 8))
+	assert.EqualValues(t, 6, GCD[int8](18, 12))
+	assert.EqualValues(t, 5, GCD[uint8](15, 25))
+	assert.EqualValues(t, 7, GCD[int32](7, 0))
+	assert.EqualValues(t, 9, GCD[uint64](0, 9))
+	assert.EqualValues(t, 0, GCD[int64](0, 0))
+	assert.EqualValues(t, 12, GCD[int](24, 36))
+	assert.EqualValues(t, 12, GCD[int](24, -36))
+	assert.EqualValues(t, 12, GCD[int](-24, 36))
+	assert.EqualValues(t, 12, GCD[int](-24, -36))
+}
+
+func TestLCM(t *testing.T) {
+	assert.EqualValues(t, 15, LCM[int](3, 5))
+	assert.EqualValues(t, 16, LCM[int](8, 16))
+	assert.EqualValues(t, 91, LCM[int](13, 7))
+	assert.EqualValues(t, 0, LCM[int](0, 3))
+	assert.EqualValues(t, 0, LCM[int](4, 0))
+	assert.EqualValues(t, 0, LCM[int](0, 0))
+	assert.EqualValues(t, 6, LCM[int](2, 3))
+	assert.EqualValues(t, 6, LCM[int](-2, 3))
+	assert.EqualValues(t, 6, LCM[int](2, -3))
+	assert.EqualValues(t, 6, LCM[int](-2, -3))
+}

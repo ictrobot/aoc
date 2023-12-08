@@ -30,3 +30,32 @@ func IntSign[T constraints.Integer](x T) int {
 	}
 	return 0
 }
+
+// GCD returns the greatest common divisor of two integers using the Euclidean
+// algorithm, e.g. GCD(12, 18) = 6
+func GCD[T constraints.Integer](a, b T) T {
+	if b < 0 {
+		b = -b
+	}
+
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+// LCM returns the least common multiple of two integers, e.g. LCM(12, 18) = 36
+func LCM[T constraints.Integer](a, b T) T {
+	if a == 0 || b == 0 {
+		return 0
+	}
+
+	if a < 0 {
+		a = -a
+	}
+	if b < 0 {
+		b = -b
+	}
+
+	return a * b / GCD(a, b)
+}
