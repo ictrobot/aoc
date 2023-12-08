@@ -2,6 +2,7 @@ package parse
 
 import (
 	"github.com/stretchr/testify/assert"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -21,7 +22,30 @@ func TestChunks(t *testing.T) {
 }
 
 func TestWhitespace(t *testing.T) {
+	assert.Equal(t, ([]string)(nil), Whitespace(""))
+	assert.Equal(t, ([]string)(nil), Whitespace(" "))
+	assert.Equal(t, ([]string)(nil), Whitespace(" \t\r\n\t"))
+	assert.Equal(t, []string{"1"}, Whitespace("1"))
+	assert.Equal(t, []string{"12", "34"}, Whitespace("12\n34"))
+	assert.Equal(t, []string{"ab", "c"}, Whitespace("\tab\nc"))
+	assert.Equal(t, []string{"a", "xyz"}, Whitespace("\ta\nxyz\r\n\f"))
+	assert.Equal(t, []string{"🎄", "❄️"}, Whitespace("🎄\n❄️"))
 	assert.Equal(t, []string{"a", "b", "1", "2", "3", "4", "5", "6", "cde"}, Whitespace("\na b 1\n2 3\r\n4\r\n\r\n5  \n  6\n\n\ncde\n"))
+}
+
+func BenchmarkWhitespace(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Whitespace("\na b 1\n2 3\r\n4\r\n\r\n5  \n  6\n\n\ncde\n")
+	}
+}
+
+func BenchmarkWhitespace_Regex(b *testing.B) {
+	nonWhitespaceRegexp := regexp.MustCompile(`\S+`)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		nonWhitespaceRegexp.FindAllString("\na b 1\n2 3\r\n4\r\n\r\n5  \n  6\n\n\ncde\n", -1)
+	}
 }
 
 func TestCharacters(t *testing.T) {
@@ -39,7 +63,7 @@ func BenchmarkCharacters(b *testing.B) {
 	}
 }
 
-func BenchmarkStringsSplit(b *testing.B) {
+func BenchmarkCharacters_StringsSplit(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strings.Split("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "")
 	}

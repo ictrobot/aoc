@@ -7,7 +7,6 @@ import (
 )
 
 var chunkRegexp = regexp.MustCompile(`(?m)^.+$(?:\n^.+$)*`)
-var nonWhitespaceRegexp = regexp.MustCompile(`\S+`)
 
 // Lines splits a string based on newlines, removing the last line if empty
 func Lines(s string) []string {
@@ -36,7 +35,31 @@ func Chunks(s string) []string {
 
 // Whitespace splits a string on whitespace
 func Whitespace(s string) []string {
-	return nonWhitespaceRegexp.FindAllString(s, -1)
+	if s == "" {
+		return nil
+	}
+
+	i := 0
+	var results []string
+	for i < len(s) {
+		for i < len(s) && (s[i] == ' ' || s[i] == '\r' || s[i] == '\n' || s[i] == '\t' || s[i] == '\f') {
+			i++
+		}
+
+		if i >= len(s) {
+			break
+		}
+
+		j := i + 1
+		for j < len(s) && s[j] != ' ' && s[j] != '\r' && s[j] != '\n' && s[j] != '\t' && s[j] != '\f' {
+			j++
+		}
+
+		results = append(results, s[i:j])
+		i = j
+	}
+
+	return results
 }
 
 // Characters splits a string on each character, optimized for ASCII strings
