@@ -33,6 +33,31 @@ func TestIntSign(t *testing.T) {
 	assert.Equal(t, -1, IntSign(-255))
 }
 
+func TestIntPow(t *testing.T) {
+	assert.EqualValues(t, 1, IntPow(5, 0))
+	assert.EqualValues(t, 5, IntPow(5, 1))
+	assert.EqualValues(t, 25, IntPow(5, 2))
+	assert.EqualValues(t, 125, IntPow(5, 3))
+	assert.EqualValues(t, 625, IntPow(5, 4))
+	assert.EqualValues(t, 15625, IntPow(5, 6))
+	assert.EqualValues(t, 256, IntPow(2, 8))
+
+	assert.Panics(t, func() {
+		IntPow(10, -1)
+	})
+}
+
+func TestIntRoundedDiv(t *testing.T) {
+	assert.EqualValues(t, 10, IntRoundedDiv(104, 10))
+	assert.EqualValues(t, 11, IntRoundedDiv(105, 10))
+	assert.EqualValues(t, -10, IntRoundedDiv(-104, 10))
+	assert.EqualValues(t, -11, IntRoundedDiv(-105, 10))
+	assert.EqualValues(t, -10, IntRoundedDiv(104, -10))
+	assert.EqualValues(t, -11, IntRoundedDiv(105, -10))
+	assert.EqualValues(t, 10, IntRoundedDiv(-104, -10))
+	assert.EqualValues(t, 11, IntRoundedDiv(-105, -10))
+}
+
 func TestGCD(t *testing.T) {
 	assert.EqualValues(t, 4, GCD[int](4, 8))
 	assert.EqualValues(t, 6, GCD[int8](18, 12))
