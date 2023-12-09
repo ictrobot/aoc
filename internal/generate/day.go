@@ -39,6 +39,9 @@ func generateDay(baseDir string, year, day int) error {
 
 	// create input file ahead of time, so file can be already open in editor before it releases
 	dayInput := filepath.Join(baseDir, "inputs", fmt.Sprintf("%d", year), fmt.Sprintf("day%02d", day))
+	if err := os.MkdirAll(filepath.Dir(dayInput), 0775); err != nil {
+		return fmt.Errorf("creating day folder: %w", err)
+	}
 	f, err = os.OpenFile(dayInput, os.O_RDONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return fmt.Errorf("creating day input: %w", err)

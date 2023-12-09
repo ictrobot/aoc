@@ -2,6 +2,7 @@
 package solution
 
 import (
+	y2021d01 "github.com/ictrobot/aoc/internal/aoc2021/day01"
 	y2022d01 "github.com/ictrobot/aoc/internal/aoc2022/day01"
 	y2022d02 "github.com/ictrobot/aoc/internal/aoc2022/day02"
 	y2022d03 "github.com/ictrobot/aoc/internal/aoc2022/day03"
@@ -41,6 +42,7 @@ import (
 // Years returns a int slice containing years with solution
 func Years() []int {
 	return []int{
+		2021,
 		2022,
 		2023,
 	}
@@ -49,6 +51,10 @@ func Years() []int {
 // Days returns a int slice containing solution for the given year with a solution
 func Days(year int) []int {
 	switch year {
+	case 2021:
+		return []int{
+			1,
+		}
 	case 2022:
 		return []int{
 			1,
@@ -96,6 +102,11 @@ func Days(year int) []int {
 // For returns an implementation of a solution for the given year & day
 func For(year, day int) Solution {
 	switch year {
+	case 2021:
+		switch day {
+		case 1:
+			return &y2021d01.Day01{}
+		}
 	case 2022:
 		switch day {
 		case 1:
