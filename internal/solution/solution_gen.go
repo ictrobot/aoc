@@ -5,6 +5,7 @@ import (
 	y2021d01 "github.com/ictrobot/aoc/internal/aoc2021/day01"
 	y2021d02 "github.com/ictrobot/aoc/internal/aoc2021/day02"
 	y2021d03 "github.com/ictrobot/aoc/internal/aoc2021/day03"
+	y2021d04 "github.com/ictrobot/aoc/internal/aoc2021/day04"
 	y2022d01 "github.com/ictrobot/aoc/internal/aoc2022/day01"
 	y2022d02 "github.com/ictrobot/aoc/internal/aoc2022/day02"
 	y2022d03 "github.com/ictrobot/aoc/internal/aoc2022/day03"
@@ -58,6 +59,7 @@ func Days(year int) []int {
 			1,
 			2,
 			3,
+			4,
 		}
 	case 2022:
 		return []int{
@@ -114,6 +116,8 @@ func For(year, day int) Solution {
 			return &y2021d02.Day02{}
 		case 3:
 			return &y2021d03.Day03{}
+		case 4:
+			return &y2021d04.Day04{}
 		}
 	case 2022:
 		switch day {
