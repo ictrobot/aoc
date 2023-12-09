@@ -208,9 +208,15 @@ func (g *Grid[T]) Resize(xMin, yMin, xMax, yMax int) *Grid[T] {
 
 	n := Grid[T]{init: true, xMin: xMin, yMin: yMin, xMax: xMax, yMax: yMax}
 
-	n.s = make([][]T, xMax-xMin+1)
+	xLen := xMax - xMin + 1
+	n.s = make([][]T, xLen)
+
+	// allocate each slice from one large slice to ensure slices are contiguous
+	// which slightly improves both allocation & access performance
+	yLen := yMax - yMin + 1
+	ts := make([]T, xLen*yLen)
 	for x := 0; x < xMax-xMin+1; x++ {
-		n.s[x] = make([]T, yMax-yMin+1)
+		n.s[x] = ts[x*yLen : (x+1)*yLen : (x+1)*yLen]
 	}
 
 	if g.init {

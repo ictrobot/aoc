@@ -151,16 +151,16 @@ func ExtractInt64s(s string) []int64 {
 	return Int64s(IntStrings(s))
 }
 
-func UintString(s string) []string {
+func UintStrings(s string) []string {
 	return uintRegexp.FindAllString(s, -1)
 }
 
 func ExtractUints(s string) []uint {
-	return Uints(UintString(s))
+	return Uints(UintStrings(s))
 }
 
 func ExtractUint64s(s string) []uint64 {
-	return Uint64s(UintString(s))
+	return Uint64s(UintStrings(s))
 }
 
 func ExtractDigits(s string) []int {
