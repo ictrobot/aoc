@@ -20,3 +20,18 @@ be printed).
 Support for downloading inputs can also be removed using the `nohttp` build tag (e.g. `go build -tags=nohttp .`)
 
 Automatic submission of solutions is not supported.
+
+## Development
+
+`go run ./internal/generate $year $day` will generate placeholder solution files for a given year & day and add
+the solution to the list in `./internal/solution/solution_gen.go` automatically.
+Not supplying a day will generate files for all released puzzles that year.
+It is safe to rerun - existing solution files will not be replaced.
+
+`go generate ./...` can be used to update `./internal/solution/solution_gen.go` without creating new solutions.
+
+I would not recommend using this repository as a template as many functions aren't documented, and it was not designed
+as one.
+However, it is possible to do so by deleting my solutions using `rm -r ./internal/aoc*` followed by resetting the
+solution list using `go generate ./...`.
+My utility functions can also be deleted using `rm -r ./internal/util`.

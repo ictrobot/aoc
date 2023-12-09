@@ -13,6 +13,7 @@ type Options struct {
 	UseExampleInput          bool
 	PrintTiming, PrintParsed bool
 	Profile                  bool
+	Silent                   bool // set when profiling
 }
 
 func ParseOptions() *Options {

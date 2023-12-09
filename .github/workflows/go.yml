@@ -35,3 +35,6 @@ jobs:
 
       - name: Run (32 bit)
         run: ./aoc -h && ./aoc -e
+
+      - name: Build without solutions
+        run: rm -r ./internal/aoc* ./internal/util && go generate ./... && go build . && ./aoc -h

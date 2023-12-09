@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	pprofSeconds  = 30
-	pprofFilename = "aoc.prof"
+	pprofSeconds       = 30
+	pprofMinIterations = 100
+	pprofFilename      = "aoc.pprof"
 )
 
 func (o *Options) Run() {
@@ -27,10 +28,21 @@ func (o *Options) Run() {
 		}
 		defer pprof.StopCPUProfile()
 
+		iterations := 0
 		start := time.Now()
-		for time.Since(start).Seconds() < pprofSeconds {
+		for iterations < pprofMinIterations || time.Since(start).Seconds() < pprofSeconds {
 			o.runSolutions()
+
+			if iterations == 0 {
+				// disable printing on future iterations to avoid fmt.Println
+				// dominating profiles for quick solutions
+				o.Silent = true
+				_, _ = fmt.Fprintln(os.Stderr, "\noutput suppressed for future iterations")
+			}
+			iterations++
 		}
+		o.Silent = false
+		_, _ = fmt.Fprintf(os.Stderr, "completed %d iterations in %.2f seconds\n", iterations, time.Since(start).Seconds())
 
 		return
 	}
@@ -52,14 +64,16 @@ func (o *Options) runSolutions() {
 	}
 
 	for i, y := range years {
-		if i > 0 {
+		if i > 0 && !o.Silent {
 			fmt.Println()
 		}
 		for j, d := range solution.Days(y) {
-			if j > 0 {
+			if j > 0 && !o.Silent {
 				fmt.Println()
 			}
-			fmt.Printf("%d day %02d:\n", y, d)
+			if !o.Silent {
+				fmt.Printf("%d day %02d:\n", y, d)
+			}
 
 			o.runSolution(y, d)
 		}
@@ -82,7 +96,7 @@ func (o *Options) runSolution(year, day int) {
 			t := time.Now()
 			p1 := s.Part1()
 			o.printTiming(year, day, t, "example part 1")
-			fmt.Println(p1)
+			o.printResult(p1)
 		}
 
 		if o.Part2 {
@@ -96,7 +110,7 @@ func (o *Options) runSolution(year, day int) {
 			t := time.Now()
 			p2 := s.Part2()
 			o.printTiming(year, day, t, "example part 2")
-			fmt.Println(p2)
+			o.printResult(p2)
 		}
 	} else {
 		input, err := api.GetInput(year, day)
@@ -114,20 +128,20 @@ func (o *Options) runSolution(year, day int) {
 			t = time.Now()
 			p1 := s.Part1()
 			o.printTiming(year, day, t, "part 1")
-			fmt.Println(p1)
+			o.printResult(p1)
 		}
 
 		if o.Part2 {
 			t = time.Now()
 			p2 := s.Part2()
 			o.printTiming(year, day, t, "part 2")
-			fmt.Println(p2)
+			o.printResult(p2)
 		}
 	}
 }
 
 func (o *Options) printTiming(year, day int, t time.Time, msg string) {
-	if !o.PrintTiming {
+	if o.Silent || !o.PrintTiming {
 		return
 	}
 
@@ -142,7 +156,7 @@ func (o *Options) printTiming(year, day int, t time.Time, msg string) {
 }
 
 func (o *Options) printParsed(year, day int, s solution.Solution) {
-	if !o.PrintParsed {
+	if o.Silent || !o.PrintParsed {
 		return
 	}
 
@@ -153,4 +167,12 @@ func (o *Options) printParsed(year, day int, s solution.Solution) {
 		day,
 		s,
 	)
+}
+
+func (o *Options) printResult(r any) {
+	if o.Silent {
+		return
+	}
+
+	_, _ = fmt.Println(r)
 }

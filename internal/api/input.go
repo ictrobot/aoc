@@ -26,17 +26,16 @@ func ReleaseTime(year, day int) (time.Time, error) {
 }
 
 func GetInput(year, day int) (string, error) {
+	file := filepath.Join("inputs", fmt.Sprintf("%d", year), fmt.Sprintf("day%02d", day))
+	if v, ok := inputCache.Load(file); ok {
+		return v.(string), nil
+	}
+
 	releaseTime, err := ReleaseTime(year, day)
 	if err != nil {
 		return "", err
 	} else if time.Now().Before(releaseTime) {
 		return "", fmt.Errorf("%d-%02d is not released yet", year, day)
-	}
-
-	file := filepath.Join("inputs", fmt.Sprintf("%d", year), fmt.Sprintf("day%02d", day))
-
-	if v, ok := inputCache.Load(file); ok {
-		return v.(string), nil
 	}
 
 	if b, err := os.ReadFile(file); err != nil {

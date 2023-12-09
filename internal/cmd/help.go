@@ -50,11 +50,11 @@ Options:
 		print the parsed input
 
 	--pprof
-		run the specified solutions in a loop for %d seconds and write a cpu
-		profile to %s
+		run the specified solutions in a loop for at least %d iterations or
+		%d seconds (whichever is longer) and write a cpu profile to %s
 
 	--help/-h
-		print help`, pprofSeconds, pprofFilename)
+		print help`, pprofMinIterations, pprofSeconds, pprofFilename)
 
 	printSolutions(w)
 	printBuild(w)
@@ -65,6 +65,7 @@ Options:
 func printSolutions(w io.Writer) {
 	years := solution.Years()
 	if len(years) == 0 {
+		_, _ = fmt.Fprintln(w, "\nSolutions:\n\t[none]")
 		return
 	}
 
