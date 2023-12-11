@@ -3,6 +3,7 @@ package day10
 import (
 	_ "embed"
 	"fmt"
+	"github.com/ictrobot/aoc/internal/util/numbers"
 	"github.com/ictrobot/aoc/internal/util/parse"
 	"github.com/ictrobot/aoc/internal/util/vec"
 )
@@ -43,7 +44,7 @@ type Day10 struct {
 
 func (d *Day10) Parse(input string) {
 	lines := parse.Lines(input)
-	d.grid = vec.NewGrid[uint8](0, 0, len(lines[0]), len(lines))
+	d.grid = vec.NewGrid[uint8](0, 0, len(lines[0])-1, len(lines)-1)
 
 	d.start.X = -1
 	for y, l := range lines {
@@ -100,68 +101,53 @@ func (d *Day10) ParseExample2() {
 }
 
 func (d *Day10) Part1() any {
-	return d.loopPipesCount() / 2
-}
-
-func (d *Day10) Part2() any {
-	loop := d.loopPipes()
-	xMin, yMin, xMax, yMax := loop.Bounds()
-
-	// for each row, calculate which tiles are inside by the parity of the
-	// numbers of pipes to the left with north connections
-	count := 0
-	for y := yMin; y <= yMax; y++ {
-		inside := false
-		for x := xMin; x <= xMax; x++ {
-			if loop.ContainsInts(x, y) {
-				if d.grid.GetInts(x, y)&north != 0 {
-					inside = !inside
-				}
-			} else if inside {
-				count++
-			}
-		}
-	}
-
-	return count
-}
-
-// loopPipesCount returns the number of pipes in the loop from Day10.start
-func (d *Day10) loopPipesCount() int {
-	pos := d.start
+	pipe := d.start
 	dir := oneDir(d.grid.Get(d.start))
 	count := 0
 	for {
 		count++
 
-		// get the next pipe in direction dir
-		pos = pos.Add(offsets[dir])
-		// find the next pipe's direction that isn't the way we've come from
-		dir = d.grid.Get(pos) & (^opposites[dir])
-
-		if pos == d.start {
-			return count
+		pipe = pipe.Add(offsets[dir])
+		if pipe == d.start {
+			return count / 2
 		}
+
+		dir = d.grid.Get(pipe) & (^opposites[dir])
 	}
 }
 
-// loopPipes returns a grid with the positions for all the pipes in the loop
-// from Day10.start marked
-func (d *Day10) loopPipes() *vec.Grid[bool] {
-	pos := d.start
-	dir := oneDir(d.grid.Get(pos))
-	pipes := vec.NewGrid[bool](d.grid.Bounds())
+// Part2 calculates the enclosed tiles using the [shoelace formula] and
+// [Pick's theorem]. Pick's theorem can be rearranged to give
+//
+//	interiorPoints = area - perimeter/2 + 1
+//
+// The perimeter is equal to the number of pipes in the loop, as each pipe is
+// one unit apart. The area can be calculated using the shoelace formula
+//
+//	area = abs(sum(x_i*y_{i+1} - x_{i+1}*y_i)))/2
+//
+// Credit to all the users on the [reddit solutions thread] for the idea
+//
+// [shoelace formula]: https://en.wikipedia.org/wiki/Shoelace_formula#Triangle_formula
+// [Pick's theorem]: https://en.wikipedia.org/wiki/Pick's_theorem
+// [reddit solutions thread]: https://www.reddit.com/r/adventofcode/comments/18evyu9/2023_day_10_solutions
+func (d *Day10) Part2() any {
+	pipe := d.start
+	dir := oneDir(d.grid.Get(pipe))
+	twiceArea := 0
+	perimeter := 0
 	for {
-		pipes.Set(pos, true)
+		next := pipe.Add(offsets[dir])
 
-		// get the next pipe in direction dir
-		pos = pos.Add(offsets[dir])
-		// find the next pipe's direction that isn't the way we've come from
-		dir = d.grid.Get(pos) & (^opposites[dir])
+		twiceArea += pipe.X*next.Y - next.X*pipe.Y
+		perimeter++
 
-		if pos == d.start {
-			return pipes
+		if next == d.start {
+			return numbers.IntAbs(twiceArea)/2 - perimeter/2 + 1
 		}
+
+		pipe = next
+		dir = d.grid.Get(next) & (^opposites[dir])
 	}
 }
 
