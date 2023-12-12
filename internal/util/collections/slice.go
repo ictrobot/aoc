@@ -25,7 +25,21 @@ func Fill[S ~[]E, E any](s S, value E) {
 		return
 	}
 
-	for j := 32; j < len(s); j *= 2 {
-		copy(s[j:], s[:j])
+	for i := 32; i < len(s); i *= 2 {
+		copy(s[i:], s[:i])
 	}
+}
+
+// Repeat returns a new slice containing n copies of s
+func Repeat[S ~[]E, E any](s S, n int) S {
+	if len(s) == 0 || n <= 0 {
+		return nil
+	}
+
+	result := make(S, len(s)*n)
+	copy(result, s)
+	for i := len(s); i < len(result); i *= 2 {
+		copy(result[i:], result[:i])
+	}
+	return result
 }

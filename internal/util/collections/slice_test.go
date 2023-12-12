@@ -29,3 +29,14 @@ func TestFill(t *testing.T) {
 		}
 	}
 }
+
+func TestRepeat(t *testing.T) {
+	assert.Equal(t, []int(nil), Repeat[[]int, int](nil, 10))
+	assert.Equal(t, []int(nil), Repeat([]int{}, 10))
+
+	assert.Equal(t, []int{1, 2, 3}, Repeat([]int{1, 2, 3}, 1))
+	assert.Equal(t, []int{1, 2, 3, 1, 2, 3}, Repeat([]int{1, 2, 3}, 2))
+	assert.Equal(t, []int{1, 2, 3, 1, 2, 3, 1, 2, 3}, Repeat([]int{1, 2, 3}, 3))
+	assert.Equal(t, []int{1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3}, Repeat([]int{1, 2, 3}, 4))
+	assert.Equal(t, []int{1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3}, Repeat([]int{1, 2, 3}, 5))
+}
