@@ -50,18 +50,13 @@ func (d *Day13) summarize(check func([]string, []string) bool) int {
 }
 
 func checkHorizontalReflection(p []string, check func([]string, []string) bool) int {
-	// reuse slice for reverse slice to reduce allocation
-	reversed := make([]string, len(p)-1)
+	reversed := slices.Clone(p)
+	slices.Reverse(reversed)
 
-	for y := 1; y < len(p); y++ {
-		l := min(y, len(p)-y)
-		before := p[y-l : y]
-
-		copy(reversed[:l], p[y:y+l])
-		slices.Reverse(reversed[:l])
-
-		if check(before, reversed[:l]) {
-			return y
+	for line := 1; line < len(p); line++ {
+		width := min(line, len(p)-line)
+		if check(p[line-width:line], reversed[len(p)-line-width:len(p)-line]) {
+			return line
 		}
 	}
 
