@@ -16,7 +16,16 @@ func TestLines(t *testing.T) {
 }
 
 func TestChunks(t *testing.T) {
-	assert.Equal(t, []string{"a\nb\nc", "1\n2\n3"}, Chunks("a\nb\nc\n\n1\n2\n3\n"))
+	assert.Equal(t, []string(nil), Chunks(""))
+	assert.Equal(t, []string(nil), Chunks("\n"))
+	assert.Equal(t, []string(nil), Chunks("\n\n"))
+	assert.Equal(t, []string{"a", "b"}, Chunks("a\n\nb"))
+	assert.Equal(t, []string{"ab", "cd"}, Chunks("ab\n\ncd"))
+	assert.Equal(t, []string{"ab", "cd"}, Chunks("ab\n\ncd\n"))
+	assert.Equal(t, []string{"ab", "cd"}, Chunks("ab\n\ncd\n\n"))
+	assert.Equal(t, []string{"a\nb", "c\nd"}, Chunks("a\nb\n\nc\nd"))
+	assert.Equal(t, []string{"a\nb", "c\nd"}, Chunks("a\nb\n\nc\nd\n"))
+	assert.Equal(t, []string{"a\nb", "c\nd"}, Chunks("a\nb\n\nc\nd\n\n"))
 	assert.Equal(t, []string{"a\nb\nc", "1\n2\n3"}, Chunks("a\r\nb\r\nc\r\n\r\n1\r\n2\r\n3\r\n"))
 	assert.Equal(t, []string{"a\nb", "1", "c\nd"}, Chunks("\na\nb\n\n\n1\n\nc\nd\n\n"))
 }

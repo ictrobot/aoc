@@ -1,12 +1,9 @@
 package parse
 
 import (
-	"regexp"
 	"strings"
 	"unicode/utf8"
 )
-
-var chunkRegexp = regexp.MustCompile(`(?m)^.+$(?:\n^.+$)*`)
 
 // Lines splits a string based on newlines, removing the last line if empty
 func Lines(s string) []string {
@@ -29,8 +26,29 @@ func Lines(s string) []string {
 }
 
 // Chunks splits a string into "chunks" split by blank lines. Additionally, CLRF is converted to LF
-func Chunks(s string) []string {
-	return chunkRegexp.FindAllString(strings.ReplaceAll(s, "\r\n", "\n"), -1)
+func Chunks(s string) (chunks []string) {
+	s = strings.ReplaceAll(s, "\r\n", "\n")
+	start := 0
+	for {
+		for start < len(s) && s[start] == '\n' {
+			start++
+		}
+
+		if start >= len(s) {
+			return
+		}
+
+		end := start + 1
+		for end+1 < len(s) && !(s[end] == '\n' && s[end+1] == '\n') {
+			end++
+		}
+		if end < len(s) && s[end] != '\n' {
+			end++
+		}
+
+		chunks = append(chunks, s[start:end])
+		start = end + 1
+	}
 }
 
 // Whitespace splits a string on whitespace
