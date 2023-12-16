@@ -47,6 +47,7 @@ import (
 	y2023d13 "github.com/ictrobot/aoc/internal/aoc2023/day13"
 	y2023d14 "github.com/ictrobot/aoc/internal/aoc2023/day14"
 	y2023d15 "github.com/ictrobot/aoc/internal/aoc2023/day15"
+	y2023d16 "github.com/ictrobot/aoc/internal/aoc2023/day16"
 )
 
 // Years returns a int slice containing years with solution
@@ -114,6 +115,7 @@ func Days(year int) []int {
 			13,
 			14,
 			15,
+			16,
 		}
 	}
 	return nil
@@ -220,6 +222,8 @@ func For(year, day int) Solution {
 			return &y2023d14.Day14{}
 		case 15:
 			return &y2023d15.Day15{}
+		case 16:
+			return &y2023d16.Day16{}
 		}
 	}
 	return nil
