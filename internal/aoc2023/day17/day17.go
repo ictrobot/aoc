@@ -55,12 +55,14 @@ func (d *Day17) Part2() any {
 }
 
 func (d *Day17) lowestLossPath(minLength, maxLength int) int {
-	var queue structures.PriorityQueue[node]
+	queue := structures.Heap[node]{LessThan: func(a, b node) bool {
+		return a.loss < b.loss
+	}}
 	queue.Push(node{prevDir: math.MaxUint8})
 
 	end := vec.I2[int16]{int16(len(d.grid[0]) - 1), int16(len(d.grid) - 1)}
 
-	visited := make(map[uint64]struct{})
+	visited := structures.BitSet32[uint32]{}
 	for !queue.IsEmpty() {
 		n := queue.Pop()
 
@@ -68,13 +70,11 @@ func (d *Day17) lowestLossPath(minLength, maxLength int) int {
 			return n.loss
 		}
 
-		// for deduplication use bit to represent if previously going
-		// horizontal or vertical plus packed coordinates
-		k := uint64((n.prevDir&2)>>1) | uint64(uint16(n.pos.X))<<16 | uint64(uint16(n.pos.Y))<<8
-		if _, ok := visited[k]; ok {
+		k := key(n.pos, n.prevDir)
+		if visited.Has(k) {
 			continue
 		}
-		visited[k] = struct{}{}
+		visited.Set(k)
 
 		for dir := uint8(0); dir < 4; dir++ {
 			if dir == n.prevDir || dir^1 == n.prevDir {
@@ -95,6 +95,10 @@ func (d *Day17) lowestLossPath(minLength, maxLength int) int {
 					continue
 				}
 
+				if visited.Has(key(next, dir)) {
+					continue
+				}
+
 				queue.Push(node{next, dir, n.loss + loss})
 			}
 		}
@@ -103,6 +107,7 @@ func (d *Day17) lowestLossPath(minLength, maxLength int) int {
 	panic("no route found")
 }
 
-func (n node) LessThan(n2 node) bool {
-	return n.loss < n2.loss
+func key(pos vec.I2[int16], dir uint8) uint32 {
+	// each position can be visited once horizontally and once vertically
+	return uint32(uint16(pos.X))<<17 | uint32(uint16(pos.Y))<<1 | uint32(dir&2)>>1
 }

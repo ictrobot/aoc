@@ -3,8 +3,8 @@ package day12
 import (
 	_ "embed"
 	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc/internal/util/structures"
 	"github.com/ictrobot/aoc/internal/util/vec"
-	"slices"
 )
 
 //go:embed example
@@ -60,16 +60,17 @@ func (d *Day12) Part2() any {
 }
 
 func (d *Day12) shortestPath(starts ...vec.I2[int]) int {
-	var queue []vec.I3[int]
+	queue := structures.Heap[vec.I3[int]]{LessThan: func(a, b vec.I3[int]) bool {
+		return a.Z < b.Z
+	}}
 	for _, s := range starts {
 		// store distance in Z
-		queue = append(queue, s.WithZ(0))
+		queue.Push(s.WithZ(0))
 	}
 
 	visited := vec.Grid[bool]{}
-	for len(queue) > 0 {
-		v := queue[0]
-		queue = queue[1:]
+	for !queue.IsEmpty() {
+		v := queue.Pop()
 
 		if !visited.SetIfZero(v.XY(), true) {
 			continue
@@ -89,13 +90,9 @@ func (d *Day12) shortestPath(starts ...vec.I2[int]) int {
 
 			h := d.grid[n.Y][n.X]
 			if h <= height+1 {
-				queue = append(queue, n)
+				queue.Push(n)
 			}
 		}
-
-		slices.SortFunc(queue, func(a, b vec.I3[int]) int {
-			return a.Z - b.Z
-		})
 	}
 
 	panic("no route found")
