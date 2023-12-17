@@ -16,7 +16,17 @@ const (
 )
 
 func (o *Options) Run() {
+	o.runSolutions()
+
 	if o.Profile {
+		// running the solutions once before starting profiling ensures we
+		// don't include e.g. prompting for session token or downloading inputs
+
+		// disable printing to avoid printing dominating profiles for fast solutions
+		_, _ = fmt.Fprintln(os.Stderr, "\noutput suppressed for future iterations")
+		profileOpt := *o
+		profileOpt.Silent = true
+
 		f, err := os.Create(pprofFilename)
 		if err != nil {
 			panic(fmt.Errorf("could not create profile file: %w", err))
@@ -31,23 +41,18 @@ func (o *Options) Run() {
 		iterations := 0
 		start := time.Now()
 		for iterations < pprofMinIterations || time.Since(start).Seconds() < pprofSeconds {
-			o.runSolutions()
-
-			if iterations == 0 {
-				// disable printing on future iterations to avoid fmt.Println
-				// dominating profiles for quick solutions
-				o.Silent = true
-				_, _ = fmt.Fprintln(os.Stderr, "\noutput suppressed for future iterations")
-			}
+			profileOpt.runSolutions()
 			iterations++
 		}
-		o.Silent = false
-		_, _ = fmt.Fprintf(os.Stderr, "completed %d iterations in %.2f seconds\n", iterations, time.Since(start).Seconds())
 
-		return
+		duration := time.Since(start)
+		_, _ = fmt.Fprintf(os.Stderr,
+			"completed %d iterations in %.2fs (avg %.3fms)\n",
+			iterations,
+			duration.Seconds(),
+			duration.Seconds()*1000/float64(iterations),
+		)
 	}
-
-	o.runSolutions()
 }
 
 func (o *Options) runSolutions() {
