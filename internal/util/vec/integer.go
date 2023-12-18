@@ -30,6 +30,14 @@ func (i I3[T]) Sub(j I3[T]) I3[T] {
 	return I3[T]{i.X - j.X, i.Y - j.Y, i.Z - j.Z}
 }
 
+func (i I2[T]) Mul(c T) I2[T] {
+	return I2[T]{i.X * c, i.Y * c}
+}
+
+func (i I3[T]) Mul(c T) I3[T] {
+	return I3[T]{i.X * c, i.Y * c, i.Z * c}
+}
+
 func (i I2[T]) EuclideanDist2(j I2[T]) int64 {
 	dX := int64(i.X) - int64(j.X)
 	dY := int64(i.Y) - int64(j.Y)
