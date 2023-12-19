@@ -1,6 +1,7 @@
 package day19
 
 import (
+	"bytes"
 	_ "embed"
 	"github.com/ictrobot/aoc/internal/util/collections"
 	"github.com/ictrobot/aoc/internal/util/parse"
@@ -29,7 +30,7 @@ type rule struct {
 
 type part [types]int
 
-type matching [types][maxValue]bool
+type matching [types][maxValue]uint8
 
 const (
 	fieldX = iota
@@ -127,24 +128,20 @@ func (d *Day19) Part1() any {
 
 func (d *Day19) Part2() any {
 	var a matching
-	collections.Fill(a[0][:], true)
-	collections.Fill(a[1][:], true)
-	collections.Fill(a[2][:], true)
-	collections.Fill(a[3][:], true)
+	collections.Fill(a[0][:], 1)
+	collections.Fill(a[1][:], 1)
+	collections.Fill(a[2][:], 1)
+	collections.Fill(a[3][:], 1)
 	return d.combinations("in", a)
 }
 
 func (d *Day19) combinations(name string, m matching) (result int64) {
 	if name == accepted {
-		var counts [types]int64
+		result = 1
 		for i := 0; i < types; i++ {
-			for j := 0; j < maxValue; j++ {
-				if m[i][j] {
-					counts[i]++
-				}
-			}
+			result *= int64(bytes.Count(m[i][:], []byte{1}))
 		}
-		return counts[0] * counts[1] * counts[2] * counts[3]
+		return
 	} else if name == rejected {
 		return 0
 	}
@@ -156,16 +153,16 @@ func (d *Day19) combinations(name string, m matching) (result int64) {
 
 		if r.lessThan {
 			// rule matches 1 <= x < r.Value, so unmark r.Value <= x <= max as matching
-			collections.Fill(thisRule[r.field][r.value-1:], false) // -1 for 0 indexed
+			collections.Fill(thisRule[r.field][r.value-1:], 0) // -1 for 0 indexed
 
 			// next rule can't match 1 <= x < r.Value
-			collections.Fill(nextRule[r.field][:r.value-1], false) // -1 for 0 indexed
+			collections.Fill(nextRule[r.field][:r.value-1], 0) // -1 for 0 indexed
 		} else {
 			// rule matches r.Value < x <= max, so unmark 1 <= x <= r.Value as matching
-			collections.Fill(thisRule[r.field][:r.value], false) // -1 for 0 indexed, +1 as upper bound <=
+			collections.Fill(thisRule[r.field][:r.value], 0) // -1 for 0 indexed, +1 as upper bound <=
 
 			// next rule can't match r.Value < x <= max
-			collections.Fill(nextRule[r.field][r.value:], false) // -1 for 0 indexed, +1 as lower bound <
+			collections.Fill(nextRule[r.field][r.value:], 0) // -1 for 0 indexed, +1 as lower bound <
 		}
 		result += d.combinations(r.target, thisRule)
 	}
