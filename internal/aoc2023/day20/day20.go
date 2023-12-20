@@ -82,7 +82,8 @@ func (d *Day20) Parse(input string) {
 	}
 
 	// then allocate state offsets once we know each module's input count
-	for _, m := range d.modules {
+	for _, line := range lines {
+		m := d.modules[line[0]]
 		if m.class == flipFlop {
 			m.stateIndex = d.stateLen
 			d.stateLen++
