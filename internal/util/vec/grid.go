@@ -69,7 +69,7 @@ func (g *Grid[T]) SetIfZero(v I2[int], t T) bool {
 	if !g.inBounds(v) {
 		if t == zero {
 			// avoid resizing grid when setting element outside bounds to zero
-			return false
+			return true
 		}
 		g.resizeToInclude(v.X, v.Y)
 	}
