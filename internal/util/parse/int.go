@@ -2,12 +2,8 @@ package parse
 
 import (
 	"github.com/samber/lo"
-	"regexp"
 	"strconv"
 )
-
-var uintRegexp = regexp.MustCompile(`[0-9]+`)
-var intRegexp = regexp.MustCompile(`[+-]?[0-9]+`)
 
 func Int(s string) int {
 	v, err := strconv.ParseInt(s, 10, strconv.IntSize)
@@ -140,7 +136,7 @@ func Uint64s(s []string) []uint64 {
 }
 
 func IntStrings(s string) []string {
-	return intRegexp.FindAllString(s, -1)
+	return intStrings(s, true)
 }
 
 func ExtractInts(s string) []int {
@@ -152,7 +148,7 @@ func ExtractInt64s(s string) []int64 {
 }
 
 func UintStrings(s string) []string {
-	return uintRegexp.FindAllString(s, -1)
+	return intStrings(s, false)
 }
 
 func ExtractUints(s string) []uint {
@@ -171,4 +167,36 @@ func ExtractDigits(s string) []int {
 		}
 	}
 	return r
+}
+
+func intStrings(s string, signed bool) []string {
+	if s == "" {
+		return nil
+	}
+
+	i := 0
+	results := make([]string, 0, len(s)/2)
+	for i < len(s) {
+		for i < len(s) && (s[i] < '0' || s[i] > '9') {
+			i++
+		}
+
+		if i >= len(s) {
+			break
+		}
+
+		j := i + 1
+		for j < len(s) && s[j] >= '0' && s[j] <= '9' {
+			j++
+		}
+
+		if signed && i > 0 && (s[i-1] == '-' || s[i-1] == '+') {
+			i--
+		}
+
+		results = append(results, s[i:j])
+		i = j
+	}
+
+	return results
 }

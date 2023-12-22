@@ -285,12 +285,20 @@ func TestUint64s(t *testing.T) {
 	})
 }
 
+func TestIntStrings(t *testing.T) {
+	assert.Equal(t, []string{"1", "+123", "-233", "-2", "+4", "5"}, IntStrings("1 +123 -233 +-2 -+4 .5"))
+}
+
 func TestExtractInts(t *testing.T) {
 	assert.Equal(t, []int{1, -2147483648, 2, 2147483647}, ExtractInts("1: -2147483648 \n 2 abc 2147483647\n"))
 }
 
 func TestExtractInt64s(t *testing.T) {
 	assert.Equal(t, []int64{2, -9223372036854775808, 2, 9223372036854775807}, ExtractInt64s("2: -9223372036854775808 \n 2 abc 9223372036854775807\n"))
+}
+
+func TestUintStrings(t *testing.T) {
+	assert.Equal(t, []string{"1", "123", "233", "2", "4", "5"}, UintStrings("1 +123 -233 +-2 -+4 .5"))
 }
 
 func TestExtractUints(t *testing.T) {
