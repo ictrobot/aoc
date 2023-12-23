@@ -60,12 +60,10 @@ func (d *Day12) Part2() any {
 }
 
 func (d *Day12) shortestPath(starts ...vec.I2[int]) int {
-	queue := structures.Heap[vec.I3[int]]{LessThan: func(a, b vec.I3[int]) bool {
-		return a.Z < b.Z
-	}}
+	var queue structures.BucketQueue[vec.I3[int]]
 	for _, s := range starts {
 		// store distance in Z
-		queue.Push(s.WithZ(0))
+		queue.Push(s.WithZ(0), 0)
 	}
 
 	visited := vec.Grid[bool]{}
@@ -90,7 +88,7 @@ func (d *Day12) shortestPath(starts ...vec.I2[int]) int {
 
 			h := d.grid[n.Y][n.X]
 			if h <= height+1 {
-				queue.Push(n)
+				queue.Push(n, n.Z)
 			}
 		}
 	}

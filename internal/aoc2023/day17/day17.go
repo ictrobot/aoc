@@ -55,10 +55,8 @@ func (d *Day17) Part2() any {
 }
 
 func (d *Day17) lowestLossPath(minLength, maxLength int) int {
-	queue := structures.Heap[node]{LessThan: func(a, b node) bool {
-		return a.loss < b.loss
-	}}
-	queue.Push(node{prevDir: math.MaxUint8})
+	var queue structures.BucketQueue[node]
+	queue.Push(node{prevDir: math.MaxUint8}, 0)
 
 	end := vec.I2[int16]{int16(len(d.grid[0]) - 1), int16(len(d.grid) - 1)}
 
@@ -99,7 +97,7 @@ func (d *Day17) lowestLossPath(minLength, maxLength int) int {
 					continue
 				}
 
-				queue.Push(node{next, dir, n.loss + loss})
+				queue.Push(node{next, dir, n.loss + loss}, n.loss+loss)
 			}
 		}
 	}
