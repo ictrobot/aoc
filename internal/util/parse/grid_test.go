@@ -1,7 +1,9 @@
 package parse
 
 import (
+	"github.com/ictrobot/aoc/internal/util/structures"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -275,5 +277,68 @@ func TestReflectGrid(t *testing.T) {
 func BenchmarkReflectGrid(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		ReflectGrid[uint8](Lines, Characters, bigGridString)
+	}
+}
+
+func TestByteGrid(t *testing.T) {
+	assert.Equal(t,
+		(*structures.FlatGrid[byte])(nil),
+		ByteGrid(""),
+	)
+
+	assert.Equal(t,
+		&structures.FlatGrid[byte]{
+			S:      []byte("1"),
+			Width:  1,
+			Height: 1,
+		},
+		ByteGrid("1"),
+	)
+
+	assert.Equal(t,
+		&structures.FlatGrid[byte]{
+			S:      []byte(""),
+			Width:  0,
+			Height: 1,
+		},
+		ByteGrid("\n"),
+	)
+
+	assert.Equal(t,
+		&structures.FlatGrid[byte]{
+			S:      []byte("123456"),
+			Width:  3,
+			Height: 2,
+		},
+		ByteGrid("123\n456\r\n"),
+	)
+
+	assert.Equal(t,
+		&structures.FlatGrid[byte]{
+			S:      []byte("#.#######.#....##.#.##.##...##.#########"),
+			Width:  8,
+			Height: 5,
+		},
+		ByteGrid("#.######\n#.#....#\n#.#.##.#\n#...##.#\n########"),
+	)
+
+	assert.Equal(t,
+		&structures.FlatGrid[byte]{
+			S:      []byte(strings.ReplaceAll(bigGridString, "\n", "")),
+			Width:  100,
+			Height: 100,
+		},
+		ByteGrid(bigGridString),
+	)
+
+	assert.Panics(t, func() {
+		ByteGrid("123\n456\n\n789\n")
+	})
+}
+
+func BenchmarkByteGrid(b *testing.B) {
+	// cannot be compared to other grid functions as it doesn't parse the ints
+	for i := 0; i < b.N; i++ {
+		ByteGrid(bigGridString)
 	}
 }

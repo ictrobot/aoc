@@ -3,13 +3,14 @@ package day16
 import (
 	_ "embed"
 	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc/internal/util/structures"
 )
 
 //go:embed example
 var Example string
 
 type Day16 struct {
-	grid []string
+	grid *structures.FlatGrid[byte]
 }
 
 const (
@@ -20,7 +21,7 @@ const (
 )
 
 func (d *Day16) Parse(input string) {
-	d.grid = parse.Lines(input)
+	d.grid = parse.ByteGrid(input)
 }
 
 func (d *Day16) ParseExample() {
@@ -28,44 +29,43 @@ func (d *Day16) ParseExample() {
 }
 
 func (d *Day16) Part1() any {
-	beam := make([]uint8, len(d.grid)*len(d.grid[0]))
+	beam := structures.NewFlatGrid[uint8](d.grid.Size())
 	return d.energize(0, 0, right, beam)
 }
 
 func (d *Day16) Part2() any {
-	beam := make([]uint8, len(d.grid)*len(d.grid[0]))
+	beam := structures.NewFlatGrid[uint8](d.grid.Size())
 
 	var best int
-	for x := 0; x < len(d.grid[0]); x++ {
-		clear(beam)
+	for x := 0; x < d.grid.Width; x++ {
+		beam.Clear()
 		best = max(best, d.energize(x, 0, down, beam))
 
-		clear(beam)
-		best = max(best, d.energize(x, len(d.grid)-1, up, beam))
+		beam.Clear()
+		best = max(best, d.energize(x, d.grid.Height-1, up, beam))
 	}
-	for y := 0; y < len(d.grid[1]); y++ {
-		clear(beam)
+	for y := 0; y < d.grid.Height; y++ {
+		beam.Clear()
 		best = max(best, d.energize(0, y, right, beam))
 
-		clear(beam)
-		best = max(best, d.energize(len(d.grid[0])-1, y, left, beam))
+		beam.Clear()
+		best = max(best, d.energize(d.grid.Width-1, y, left, beam))
 	}
 	return best
 }
 
-func (d *Day16) energize(x, y int, dir uint8, beam []uint8) (count int) {
-	for x >= 0 && y >= 0 && x < len(d.grid[0]) && y < len(d.grid) {
-		idx := (x * len(d.grid[0])) + y
-		if v := beam[idx]; v&dir != 0 {
+func (d *Day16) energize(x, y int, dir uint8, beam *structures.FlatGrid[uint8]) (count int) {
+	for d.grid.InBounds(x, y) {
+		if v := beam.Get(x, y); v&dir != 0 {
 			break
 		} else {
 			if v == 0 {
 				count++
 			}
-			beam[idx] = v | dir
+			beam.Set(x, y, v|dir)
 		}
 
-		switch d.grid[y][x] {
+		switch d.grid.Get(x, y) {
 		case '.':
 			// carry on
 		case '/':
