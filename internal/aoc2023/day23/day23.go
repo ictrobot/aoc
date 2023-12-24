@@ -48,13 +48,11 @@ func (d *Day23) ParseExample() {
 }
 
 func (d *Day23) Part1() any {
-	start, end, vertices := d.graph(false)
-	return longestPath(start, 0, make([]bool, len(vertices)), vertices, end)
+	return longestPath(d.graph(false))
 }
 
 func (d *Day23) Part2() any {
-	start, end, vertices := d.graph(true)
-	return longestPath(start, 0, make([]bool, len(vertices)), vertices, end)
+	return longestPath(d.graph(true))
 }
 
 func (d *Day23) graph(ignoreSlopes bool) (int, int, []vertex) {
@@ -163,20 +161,38 @@ func (d *Day23) graph(ignoreSlopes bool) (int, int, []vertex) {
 	return vertexGrid[d.start.Y][d.start.X], vertexGrid[d.end.Y][d.end.X], vertices
 }
 
-func longestPath(current, length int, visited []bool, vertices []vertex, end int) (longest int) {
-	if current == end {
-		return length
+func longestPath(start, end int, vertices []vertex) int {
+	reverseVertices := make([]vertex, len(vertices))
+	for i := 0; i < len(vertices); i++ {
+		for _, e := range vertices[i] {
+			reverseVertices[e.vertex] = append(reverseVertices[e.vertex], edge{vertex: i, length: e.length})
+		}
 	}
-	visited[current] = true
 
-	for _, e := range vertices[current] {
-		if visited[e.vertex] {
-			continue
+	endLength := 0
+	for len(reverseVertices[end]) == 1 {
+		e := reverseVertices[end][0]
+		endLength += e.length
+		end = e.vertex
+	}
+
+	maxLength := 0
+	iterations := 0
+	var f func(int, int, uint64)
+	f = func(current, length int, visited uint64) {
+		iterations++
+		if current == end {
+			maxLength = max(maxLength, length)
+			return
 		}
 
-		longest = max(longest, longestPath(e.vertex, length+e.length, visited, vertices, end))
+		for _, e := range vertices[current] {
+			if visited&(1<<e.vertex) == 0 {
+				f(e.vertex, length+e.length, visited|1<<e.vertex)
+			}
+		}
 	}
 
-	visited[current] = false
-	return
+	f(start, 0, 1<<start)
+	return maxLength + endLength
 }
