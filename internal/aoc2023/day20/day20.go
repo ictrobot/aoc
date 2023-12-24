@@ -4,6 +4,8 @@ import (
 	_ "embed"
 	"github.com/ictrobot/aoc/internal/util/numbers"
 	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc/internal/util/structures"
+	"math"
 	"slices"
 	"strings"
 )
@@ -103,15 +105,14 @@ func (d *Day20) Part1() any {
 	state := make([]bool, d.stateLen)
 
 	var highCount, lowCount int64
-	for iteration := 1; iteration <= 1000; iteration++ {
-		d.simulateButtonPress(state, func(p pulse) {
-			if p.high {
-				highCount++
-			} else {
-				lowCount++
-			}
-		})
-	}
+	d.simulateButton(state, 1000, func(p pulse, _ int64) bool {
+		if p.high {
+			highCount++
+		} else {
+			lowCount++
+		}
+		return false
+	})
 
 	return lowCount * highCount
 }
@@ -130,21 +131,21 @@ func (d *Day20) Part2() any {
 	cyclesFound := 0
 
 	state := make([]bool, d.stateLen)
-	for iteration := int64(1); cyclesFound < len(m.inputs); iteration++ {
-		d.simulateButtonPress(state, func(p pulse) {
-			if !p.high || p.dst != m {
-				return
-			}
+	d.simulateButton(state, math.MaxInt64, func(p pulse, press int64) bool {
+		if !p.high || p.dst != m {
+			return false
+		}
 
-			idx := slices.Index(m.inputs, p.src)
-			if cycleLengths[idx] > 0 {
-				return
-			}
+		idx := slices.Index(m.inputs, p.src)
+		if cycleLengths[idx] > 0 {
+			return false
+		}
 
-			cycleLengths[idx] = iteration
-			cyclesFound++
-		})
-	}
+		cycleLengths[idx] = press
+		cyclesFound++
+
+		return cyclesFound == len(m.inputs)
+	})
 
 	lcm := int64(1)
 	for _, cycleLen := range cycleLengths {
@@ -153,48 +154,52 @@ func (d *Day20) Part2() any {
 	return lcm
 }
 
-func (d *Day20) simulateButtonPress(state []bool, callback func(pulse)) {
-	queue := []pulse{{high: false, dst: d.modules["broadcaster"]}}
+func (d *Day20) simulateButton(state []bool, presses int64, f func(pulse, int64) bool) {
+	var deque structures.Deque[pulse]
+	for press := int64(1); press <= presses; press++ {
+		deque.PushBack(pulse{high: false, dst: d.modules["broadcaster"]})
 
-	for len(queue) > 0 {
-		p := queue[0]
-		queue = queue[1:]
+		for !deque.IsEmpty() {
+			p := deque.PopFront()
 
-		callback(p)
-
-		sendHigh := p.high
-		switch p.dst.class {
-		case flipFlop:
-			if p.high {
-				// flip flops ignore high pulses
-				continue
+			if f(p, press) {
+				return
 			}
 
-			// invert state and send new state
-			newState := !state[p.dst.stateIndex]
-			state[p.dst.stateIndex] = newState
-			sendHigh = newState
-
-		case conjunction:
-			// update state for the input module
-			modState := state[p.dst.stateIndex : p.dst.stateIndex+len(p.dst.inputs)]
-			modState[slices.Index(p.dst.inputs, p.src)] = p.high
-
-			// if state is all high, then low, else high
-			sendHigh = false
-			for _, b := range modState {
-				if !b {
-					sendHigh = true
-					break
+			sendHigh := p.high
+			switch p.dst.class {
+			case flipFlop:
+				if p.high {
+					// flip flops ignore high pulses
+					continue
 				}
+
+				// invert state and send new state
+				newState := !state[p.dst.stateIndex]
+				state[p.dst.stateIndex] = newState
+				sendHigh = newState
+
+			case conjunction:
+				// update state for the input module
+				modState := state[p.dst.stateIndex : p.dst.stateIndex+len(p.dst.inputs)]
+				modState[slices.Index(p.dst.inputs, p.src)] = p.high
+
+				// if state is all high, then low, else high
+				sendHigh = false
+				for _, b := range modState {
+					if !b {
+						sendHigh = true
+						break
+					}
+				}
+
+			default:
+				// forward signal unchanged
 			}
 
-		default:
-			// forward signal unchanged
-		}
-
-		for _, o := range p.dst.outputs {
-			queue = append(queue, pulse{src: p.dst, dst: o, high: sendHigh})
+			for _, o := range p.dst.outputs {
+				deque.PushBack(pulse{src: p.dst, dst: o, high: sendHigh})
+			}
 		}
 	}
 }
