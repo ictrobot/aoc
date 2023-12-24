@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"github.com/ictrobot/aoc/internal/util/numbers"
 	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc/internal/util/structures"
 	"github.com/ictrobot/aoc/internal/util/vec"
 	"golang.org/x/exp/maps"
 )
@@ -155,12 +156,13 @@ func (d *Day21) reachablePlots(steps int) int64 {
 
 func (d *Day21) firstReached(maxSteps int) *vec.Grid[int] {
 	// use Z to store the step the position is reached first
-	queue := []vec.I3[int]{d.start.WithZ(0)}
+	var queue structures.Deque[vec.I3[int]]
+	queue.PushBack(d.start.WithZ(0))
+
 	reached := vec.NewGrid[int](d.start.X-maxSteps, d.start.Y-maxSteps, d.start.X+maxSteps, d.start.Y+maxSteps)
 
-	for len(queue) > 0 {
-		p := queue[0]
-		queue = queue[1:]
+	for !queue.IsEmpty() {
+		p := queue.PopFront()
 
 		if !reached.SetIfZero(p.XY(), p.Z) {
 			continue
@@ -181,7 +183,7 @@ func (d *Day21) firstReached(maxSteps int) *vec.Grid[int] {
 				continue
 			}
 
-			queue = append(queue, n)
+			queue.PushBack(n)
 		}
 	}
 

@@ -70,6 +70,16 @@ func TestDay21_reachablePlots(t *testing.T) {
 	assert.EqualValues(t, 167004, d.reachablePlots(500))
 	assert.EqualValues(t, 668697, d.reachablePlots(1000))
 	assert.EqualValues(t, 16733044, d.reachablePlots(5000))
+
+	assert.EqualValues(t, uint64(66931436), d.reachablePlots(10_000))
+	assert.EqualValues(t, uint64(1673523504), d.reachablePlots(50_000))
+	assert.EqualValues(t, uint64(6694148697), d.reachablePlots(100_000))
+	assert.EqualValues(t, uint64(167355128044), d.reachablePlots(500_000))
+	assert.EqualValues(t, uint64(669420421436), d.reachablePlots(1_000_000))
+	assert.EqualValues(t, uint64(16735534173504), d.reachablePlots(5_000_000))
+	assert.EqualValues(t, uint64(66942142148697), d.reachablePlots(10_000_000))
+	assert.EqualValues(t, uint64(1673553694628044), d.reachablePlots(50_000_000))
+	assert.EqualValues(t, uint64(6694214769421436), d.reachablePlots(100_000_000))
 }
 
 func Test_extrapolate(t *testing.T) {
