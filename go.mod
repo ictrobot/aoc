@@ -1,4 +1,4 @@
-module github.com/ictrobot/aoc
+module github.com/ictrobot/aoc-go
 
 go 1.21
 

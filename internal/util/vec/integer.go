@@ -1,7 +1,7 @@
 package vec
 
 import (
-	"github.com/ictrobot/aoc/internal/util/numbers"
+	"github.com/ictrobot/aoc-go/internal/util/numbers"
 	"golang.org/x/exp/constraints"
 	"math"
 )

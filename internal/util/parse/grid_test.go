@@ -1,7 +1,7 @@
 package parse
 
 import (
-	"github.com/ictrobot/aoc/internal/util/structures"
+	"github.com/ictrobot/aoc-go/internal/util/structures"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"

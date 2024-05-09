@@ -25,7 +25,7 @@ func retrieveInput(year, day int, file string) (string, error) {
 	if err != nil {
 		panic(err)
 	}
-	req.Header.Set("User-Agent", "github.com/ictrobot/aoc")
+	req.Header.Set("User-Agent", "github.com/ictrobot/aoc-go")
 	req.Header.Set("Cookie", "session="+token)
 
 	client := http.Client{}

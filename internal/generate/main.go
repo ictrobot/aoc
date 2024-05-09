@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/ictrobot/aoc/internal/api"
+	"github.com/ictrobot/aoc-go/internal/api"
 	"os"
 	"path/filepath"
 	"strconv"

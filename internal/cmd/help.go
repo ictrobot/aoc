@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ictrobot/aoc/internal/solution"
+	"github.com/ictrobot/aoc-go/internal/solution"
 	"io"
 	"os"
 	"runtime/debug"

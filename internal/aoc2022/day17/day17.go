@@ -2,7 +2,7 @@ package day17
 
 import (
 	_ "embed"
-	"github.com/ictrobot/aoc/internal/util/vec"
+	"github.com/ictrobot/aoc-go/internal/util/vec"
 	"strings"
 )
 

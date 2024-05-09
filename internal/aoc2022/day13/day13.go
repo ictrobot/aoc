@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc-go/internal/util/parse"
 	"reflect"
 	"slices"
 )

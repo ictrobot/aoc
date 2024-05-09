@@ -3,7 +3,7 @@ package day02
 import (
 	_ "embed"
 	"fmt"
-	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc-go/internal/util/parse"
 )
 
 //go:embed example

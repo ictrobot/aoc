@@ -3,9 +3,9 @@ package day10
 import (
 	_ "embed"
 	"fmt"
-	"github.com/ictrobot/aoc/internal/util/numbers"
-	"github.com/ictrobot/aoc/internal/util/parse"
-	"github.com/ictrobot/aoc/internal/util/vec"
+	"github.com/ictrobot/aoc-go/internal/util/numbers"
+	"github.com/ictrobot/aoc-go/internal/util/parse"
+	"github.com/ictrobot/aoc-go/internal/util/vec"
 )
 
 //go:embed example

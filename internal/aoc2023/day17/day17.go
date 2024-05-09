@@ -2,9 +2,9 @@ package day17
 
 import (
 	_ "embed"
-	"github.com/ictrobot/aoc/internal/util/parse"
-	"github.com/ictrobot/aoc/internal/util/structures"
-	"github.com/ictrobot/aoc/internal/util/vec"
+	"github.com/ictrobot/aoc-go/internal/util/parse"
+	"github.com/ictrobot/aoc-go/internal/util/structures"
+	"github.com/ictrobot/aoc-go/internal/util/vec"
 	"math"
 )
 

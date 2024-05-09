@@ -1,6 +1,6 @@
 package solution
 
-//go:generate go run github.com/ictrobot/aoc/internal/generate
+//go:generate go run github.com/ictrobot/aoc-go/internal/generate
 
 type Solution interface {
 	Parse(s string)

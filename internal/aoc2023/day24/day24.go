@@ -2,8 +2,8 @@ package day24
 
 import (
 	_ "embed"
-	"github.com/ictrobot/aoc/internal/util/numbers"
-	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc-go/internal/util/numbers"
+	"github.com/ictrobot/aoc-go/internal/util/parse"
 	"math"
 )
 

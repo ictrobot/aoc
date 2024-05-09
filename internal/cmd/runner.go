@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ictrobot/aoc/internal/api"
-	"github.com/ictrobot/aoc/internal/solution"
+	"github.com/ictrobot/aoc-go/internal/api"
+	"github.com/ictrobot/aoc-go/internal/solution"
 	"os"
 	"runtime/pprof"
 	"time"

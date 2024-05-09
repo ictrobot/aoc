@@ -1,7 +1,7 @@
 package deep
 
 import (
-	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc-go/internal/util/parse"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

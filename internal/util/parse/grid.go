@@ -2,7 +2,7 @@ package parse
 
 import (
 	"fmt"
-	"github.com/ictrobot/aoc/internal/util/structures"
+	"github.com/ictrobot/aoc-go/internal/util/structures"
 )
 
 type Splitter func(string) []string

@@ -63,7 +63,7 @@ package solution
 
 import (
 	{{- range $year, $solution := . }}{{- range $day := $solution }}
-	y{{ $year }}d{{ printf "%02d" $day }} "github.com/ictrobot/aoc/internal/aoc{{ $year }}/day{{ printf "%02d" $day }}"
+	y{{ $year }}d{{ printf "%02d" $day }} "github.com/ictrobot/aoc-go/internal/aoc{{ $year }}/day{{ printf "%02d" $day }}"
 	{{- end }}{{- end }}
 )
 

@@ -3,8 +3,8 @@ package day19
 import (
 	"bytes"
 	_ "embed"
-	"github.com/ictrobot/aoc/internal/util/collections"
-	"github.com/ictrobot/aoc/internal/util/parse"
+	"github.com/ictrobot/aoc-go/internal/util/collections"
+	"github.com/ictrobot/aoc-go/internal/util/parse"
 	"strings"
 )
 
