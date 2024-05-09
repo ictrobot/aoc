@@ -1,8 +1,8 @@
-aoc
+aoc-go
 ===
 
-Advent Of Code (aoc) solutions written in Go.
-The solutions are written quickly and not always following best practices (e.g. most errors panic).
+Advent Of Code solutions written in Go.
+The solutions are written quickly in an attempt to get leaderboard points and not always following best practices (e.g. most errors panic).
 
 This is primarily for my 2023 solutions.
 Prior to 2023, I wrote self-contained solutions in TypeScript which only used the Node.js standard library and no other

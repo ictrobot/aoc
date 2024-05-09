@@ -15,26 +15,26 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '~1.21.4'
+          go-version: '~1.22.3'
 
       - name: Test
         # Only checking that the benchmarks pass, so set a short benchtime
         run: go test -v ./... && go test -v -bench=. -benchtime=10ms ./...
 
       - name: Build
-        run: go build -v . && file aoc
+        run: go build -v . && file aoc-go
 
       - name: Run
-        run: ./aoc -h && ./aoc -e
+        run: ./aoc-go -h && ./aoc-go -e
 
       - name: Test (32 bit)
         run: GOARCH=386 go test -v ./... && GOARCH=386 go test -v -bench=. -benchtime=10ms ./...
 
       - name: Build (32 bit)
-        run: GOARCH=386 go build -v . && file aoc
+        run: GOARCH=386 go build -v . && file aoc-go
 
       - name: Run (32 bit)
-        run: ./aoc -h && ./aoc -e
+        run: ./aoc-go -h && ./aoc-go -e
 
       - name: Build without solutions
-        run: rm -r ./internal/aoc* ./internal/util && go generate ./... && go build . && ./aoc -h
+        run: rm -r ./internal/aoc* ./internal/util && go generate ./... && go build . && ./aoc-go -h
